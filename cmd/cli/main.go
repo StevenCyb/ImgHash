@@ -8,16 +8,12 @@ import (
 	"imghash/pkg/distance"
 	"imghash/pkg/hash"
 	"imghash/pkg/model"
+	"imghash/pkg/utils"
 	"log"
 	"os"
-	"strings"
-
-	"golang.org/x/image/webp"
 
 	"github.com/urfave/cli/v2"
 )
-
-var ErrUnsupportedFileFormat = fmt.Errorf("unsupported file format")
 
 func main() {
 	app := &cli.App{
@@ -275,35 +271,8 @@ func main() {
 	}
 }
 
-func ReadImage(path string) (image.Image, error) {
-	imageFile, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer imageFile.Close()
-
-	lowerPath := strings.ToLower(path)
-	if strings.HasSuffix(lowerPath, ".webp") {
-		imageData, err := webp.Decode(imageFile)
-		if err != nil {
-			return nil, err
-		}
-
-		return imageData, nil
-	} else if strings.HasSuffix(lowerPath, ".png") || strings.HasSuffix(lowerPath, ".jpg") || strings.HasSuffix(lowerPath, ".jpeg") {
-		imageData, _, err := image.Decode(imageFile)
-		if err != nil {
-			return nil, err
-		}
-
-		return imageData, nil
-	}
-
-	return nil, ErrUnsupportedFileFormat
-}
-
 func HashWith(hashFunc func(img image.Image) (uint64, error), imagePath string, format string) (string, error) {
-	imageData, err := ReadImage(imagePath)
+	imageData, err := utils.ReadImage(imagePath)
 	if err != nil {
 		return "", err
 	}
@@ -322,12 +291,12 @@ func HashWith(hashFunc func(img image.Image) (uint64, error), imagePath string, 
 }
 
 func CompareWith(hashFunc func(img image.Image) (uint64, error), imageAPath string, imageBPath string, format uint) (string, error) {
-	imageAData, err := ReadImage(imageAPath)
+	imageAData, err := utils.ReadImage(imageAPath)
 	if err != nil {
 		return "", err
 	}
 
-	imageBData, err := ReadImage(imageBPath)
+	imageBData, err := utils.ReadImage(imageBPath)
 	if err != nil {
 		return "", err
 	}
