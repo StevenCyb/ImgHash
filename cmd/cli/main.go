@@ -10,9 +10,14 @@ import (
 	"imghash/pkg/model"
 	"log"
 	"os"
+	"strings"
+
+	"golang.org/x/image/webp"
 
 	"github.com/urfave/cli/v2"
 )
+
+var ErrUnsupportedFileFormat = fmt.Errorf("unsupported file format")
 
 func main() {
 	app := &cli.App{
@@ -277,12 +282,24 @@ func ReadImage(path string) (image.Image, error) {
 	}
 	defer imageFile.Close()
 
-	imageData, _, err := image.Decode(imageFile)
-	if err != nil {
-		return nil, err
+	lowerPath := strings.ToLower(path)
+	if strings.HasSuffix(lowerPath, ".webp") {
+		imageData, err := webp.Decode(imageFile)
+		if err != nil {
+			return nil, err
+		}
+
+		return imageData, nil
+	} else if strings.HasSuffix(lowerPath, ".png") || strings.HasSuffix(lowerPath, ".jpg") || strings.HasSuffix(lowerPath, ".jpeg") {
+		imageData, _, err := image.Decode(imageFile)
+		if err != nil {
+			return nil, err
+		}
+
+		return imageData, nil
 	}
 
-	return imageData, nil
+	return nil, ErrUnsupportedFileFormat
 }
 
 func HashWith(hashFunc func(img image.Image) (uint64, error), imagePath string, format string) (string, error) {
