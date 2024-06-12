@@ -26,10 +26,10 @@ func NewProgress() *Progress {
 }
 
 func (p *Progress) Reset() {
-	p.progress.SetValue(0)
 	p.progress.TextFormatter = func() string {
 		return ""
-	}
+		}
+	p.progress.SetValue(0)
 }
 
 func (p *Progress) Init(min, max float64) {
@@ -38,8 +38,8 @@ func (p *Progress) Init(min, max float64) {
 }
 
 func (p *Progress) SetProgress(stage string, value float64) {
-	p.progress.SetValue(value)
 	p.progress.TextFormatter = func() string {
 		return fmt.Sprintf("%s: %.0f%%", stage, value)
 	}
+	p.progress.SetValue(value)
 }

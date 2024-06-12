@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"fmt"
 	"image"
 	"imghash/pkg/hash"
 	"strings"
@@ -22,14 +23,14 @@ var hashAlgorithms = map[string]HashFunction{
 	"Difference Hashing (dHash)":    hash.DHash,
 	"Median Hashing (mHash)":        hash.MHash,
 	"Perceptual Hashing (pHash)": func(img image.Image) (uint64, error) {
-		return hash.PHash(img, hash.HashSize32)
+		return hash.PHash(img, hash.HashSize64)
 	},
 	"Wavelet Hashing (wHash)": hash.WHash,
 }
 
 type Sidebar struct {
 	*fyne.Container
-	Algorithm       HashFunction
+	HashFunc        HashFunction
 	Sensitivity     float64
 	Directories     []string
 	StartFunc       func()
@@ -39,7 +40,7 @@ type Sidebar struct {
 
 func NewSidebar(window fyne.Window, startFunc, stopFunc func()) *Sidebar {
 	sidebar := &Sidebar{
-		Algorithm: hashAlgorithms[defaultAlgorithm],
+		HashFunc:  hashAlgorithms[defaultAlgorithm],
 		StartFunc: startFunc,
 		StopFunc:  stopFunc,
 	}
@@ -60,16 +61,20 @@ func NewSidebar(window fyne.Window, startFunc, stopFunc func()) *Sidebar {
 		algorithmOptions = append(algorithmOptions, k)
 	}
 	algorithmSelect := widget.NewSelect(algorithmOptions, func(value string) {
-		sidebar.Algorithm = hashAlgorithms[value]
+		sidebar.HashFunc = hashAlgorithms[value]
 	})
 	algorithmSelect.Selected = defaultAlgorithm
 
+	sensitivityValueLabel := widget.NewLabel("0.9")
 	sensitivity := widget.NewSlider(0, 1.0)
-	sensitivity.Step = 0.1
+	sensitivity.Step = 0.01
 	sensitivity.Value = 0.9
 	sensitivity.OnChanged = func(newSensitivity float64) {
 		sidebar.Sensitivity = newSensitivity
+		sensitivityValueLabel.SetText(fmt.Sprintf("%.2f", newSensitivity))
 	}
+
+	sensitivityContainer := container.NewBorder(nil, nil, nil, sensitivityValueLabel, sensitivity)
 
 	var dirList *widget.List
 	dirList = widget.NewList(
@@ -103,7 +108,7 @@ func NewSidebar(window fyne.Window, startFunc, stopFunc func()) *Sidebar {
 	topContainer := container.NewVBox(
 		sidebar.startStopButton,
 		algorithmSelect,
-		sensitivity,
+		sensitivityContainer,
 		dirSelect,
 	)
 	sidebar.Container = container.NewBorder(
@@ -119,5 +124,4 @@ func NewSidebar(window fyne.Window, startFunc, stopFunc func()) *Sidebar {
 
 func (s *Sidebar) Stop() {
 	s.startStopButton.SetText("Start")
-	s.StopFunc()
 }
