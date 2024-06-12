@@ -8,6 +8,7 @@ import (
 	"imghash/pkg/distance"
 	"imghash/pkg/hash"
 	"imghash/pkg/model"
+	"imghash/pkg/utils"
 	"log"
 	"os"
 
@@ -270,23 +271,8 @@ func main() {
 	}
 }
 
-func ReadImage(path string) (image.Image, error) {
-	imageFile, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer imageFile.Close()
-
-	imageData, _, err := image.Decode(imageFile)
-	if err != nil {
-		return nil, err
-	}
-
-	return imageData, nil
-}
-
 func HashWith(hashFunc func(img image.Image) (uint64, error), imagePath string, format string) (string, error) {
-	imageData, err := ReadImage(imagePath)
+	imageData, err := utils.ReadImage(imagePath)
 	if err != nil {
 		return "", err
 	}
@@ -305,12 +291,12 @@ func HashWith(hashFunc func(img image.Image) (uint64, error), imagePath string, 
 }
 
 func CompareWith(hashFunc func(img image.Image) (uint64, error), imageAPath string, imageBPath string, format uint) (string, error) {
-	imageAData, err := ReadImage(imageAPath)
+	imageAData, err := utils.ReadImage(imageAPath)
 	if err != nil {
 		return "", err
 	}
 
-	imageBData, err := ReadImage(imageBPath)
+	imageBData, err := utils.ReadImage(imageBPath)
 	if err != nil {
 		return "", err
 	}

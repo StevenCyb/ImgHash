@@ -4,11 +4,13 @@
     "bhash",
     "cmhash",
     "dhash",
+    "fyne",
     "Grayscale",
     "imghash",
     "mhash",
     "phash",
     "urfave",
+    "webp",
     "whash"
   ]
 }

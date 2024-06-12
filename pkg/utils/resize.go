@@ -5,6 +5,22 @@ import (
 	"image/color"
 )
 
+// ResizeRGBInterAreaWithRatio resizes an image with a maximum size while maintaining the aspect ratio.
+func ResizeRGBInterAreaWithRatio(img image.Image, max int) image.Image {
+	bounds := img.Bounds()
+	width, height := bounds.Dx(), bounds.Dy()
+
+	if width > height {
+		height = height * max / width
+		width = max
+	} else {
+		width = width * max / height
+		height = max
+	}
+
+	return ResizeRGBInterArea(img, width, height)
+}
+
 // ResizeRGBInterArea resizes an image using the nearest neighbor algorithm.
 func ResizeRGBInterArea(img image.Image, width, height int) image.Image {
 	bounds := img.Bounds()

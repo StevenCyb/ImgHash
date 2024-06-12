@@ -1,6 +1,6 @@
 # ImgHash
 
-This is a simple CLI tool that can compute hashes of `jpg` and `png` as well as compare images.
+This is a simple CLI tool that can compute hashes of `jpg`, `png`, `webp` and `gif` as well as compare images.
 Currently the following algorithms are supported:
 
 - Average Hashing (aHash)
@@ -11,7 +11,13 @@ Currently the following algorithms are supported:
 - Perceptual Hashing (pHash)
 - Wavelet Hashing (wHash)
 
-## Hash image
+## GUI
+There is an quick and dirty GUI implementation that works but is not covered with unit tests and refactored.
+
+<img src=".media/gui.png" width="500px">
+
+## CLI
+### Hash image
 
 Hashing an image is can be done using the following command.
 
@@ -27,7 +33,7 @@ imghash get --f binary phash image.png
 $ 0000000000000000000011100101111001111110011111110011110100000000%
 ```
 
-## Compare images
+### Compare images
 Images can be compared using the following command
 
 ```bash
