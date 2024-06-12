@@ -2,6 +2,7 @@ package worker
 
 import (
 	"errors"
+	"fmt"
 	"image"
 	"os"
 	"path/filepath"
@@ -103,17 +104,19 @@ func (w *Worker) Run(hashFunc HashFunction, sensitivity float64, directories ...
 						return
 					}
 
-					for _, file := range files {
+					for i, file := range files {
 						if !file.IsDir() {
 							absPath := filepath.Join(directories[primaryIndex], file.Name())
 							img, err := utils.ReadImage(absPath)
 							if errors.Is(err, utils.ErrUnsupportedFileFormat) {
+								fmt.Println("Unsupported file format:", absPath)
 								continue
 							} else if err != nil {
 								w.onError(err)
 								w.running = false
 								return
 							}
+							w.onProgress(fmt.Sprintf("Check directories (found %d images)...", i+1), float64(primaryIndex+1)/float64(totalDirectories)*100)
 
 							width, height := img.Bounds().Dx(), img.Bounds().Dy()
 							img = utils.ResizeRGBInterAreaWithRatio(img, 200)
@@ -153,7 +156,7 @@ func (w *Worker) Run(hashFunc HashFunction, sensitivity float64, directories ...
 						primaryIndex++
 						secondaryIndex = primaryIndex
 						continue
-					} else if primaryIndex<totalImages && imageStacks[primaryIndex].Matched {
+					} else if primaryIndex < totalImages && imageStacks[primaryIndex].Matched {
 						primaryIndex++
 						secondaryIndex = primaryIndex
 						tertiaryIndex += totalImages - primaryIndex
