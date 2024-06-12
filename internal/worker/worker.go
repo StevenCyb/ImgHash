@@ -113,10 +113,9 @@ func (w *Worker) Run(hashFunc HashFunction, sensitivity float64, directories ...
 								continue
 							} else if err != nil {
 								w.onError(err)
-								w.running = false
-								return
+								continue
 							}
-							w.onProgress(fmt.Sprintf("Check directories (found %d images)...", i+1), float64(primaryIndex+1)/float64(totalDirectories)*100)
+							w.onProgress(fmt.Sprintf("Check directories (found %d images)...", i+1), float64(primaryIndex)/float64(totalDirectories)*100)
 
 							width, height := img.Bounds().Dx(), img.Bounds().Dy()
 							img = utils.ResizeRGBInterAreaWithRatio(img, 200)
