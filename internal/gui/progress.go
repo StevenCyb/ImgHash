@@ -39,7 +39,7 @@ func (p *Progress) Init(min, max float64) {
 
 func (p *Progress) SetProgress(stage string, value float64) {
 	p.progress.TextFormatter = func() string {
-		return fmt.Sprintf("%s: %.0f%%", stage, value)
+		return fmt.Sprintf("%s %.0f%%", stage, value)
 	}
 	p.progress.SetValue(value)
 }
